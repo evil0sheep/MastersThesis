@@ -8,6 +8,7 @@
 
 \documentclass[12pt]{ucthesis}
 
+\usepackage{ifpdf} 
 \newif\ifpdf
 \ifx\pdfoutput\undefined
     \pdffalse % we are not running PDFLaTeX
@@ -35,8 +36,9 @@
     \usepackage{graphicx}
 \fi
 
-\usepackage[linktoc=all]{hyperref}
+\usepackage{hyperref}
 \hypersetup{
+	linktoc=all,
     colorlinks,
     citecolor=black,
     filecolor=black,
@@ -69,7 +71,7 @@
 \usepackage{amsmath}
 \usepackage[letterpaper]{geometry}
 \usepackage[overload]{textcase}
-\usepackage[toc,page]{appendix}
+%\usepackage[toc,page]{appendix}
 
 \usepackage{tabularx}
 \usepackage{algorithm}
@@ -115,9 +117,9 @@
 % Declarations for Front Matter
 
 % Update fields below!
-\title{Can Clustering Improve Requirements Traceability?
-       A Tracelab-enabled Study}
-\author{Brett Armstrong}
+\title{Toward General Purpose 3D User Interfaces: Extending Windowing Systems to 
+Three Dimensions}
+\author{Forrest Reiling}
 \degreemonth{December} \degreeyear{2013} \degree{Master of Science}
 \defensemonth{December} \defenseyear{2013}
 \numberofmembers{3} \chair{Professor Alexander Dekhtyar, Ph.D.,\newline Department of Computer Science} \othermemberA{Professor David Janzen, Ph.D.,\newline Department of Computer Science} \othermemberB{Professor Foaad Khosmood, Ph.D.,\newline Department of Computer Science} \field{Computer Science} \campus{San Luis Obispo}
@@ -137,7 +139,8 @@
 
 \begin{abstract}
 
-\input{Abstract}
+
+
 
 \end{abstract}
 
@@ -169,17 +172,8 @@ Thanks to:
 
 % ------------- Main chapters here --------------------
 
-\include{Introduction}
 
-\include{Background}
 
-\include{TLComponents}
-
-\include{Clustering}
-
-\include{ExperimentalDesign}
-
-\include{ConclusionFutureWork}
 
 % ------------- End main chapters ----------------------
 
@@ -188,9 +182,9 @@ Thanks to:
 \bibliography{Bibliography}
 %\addcontentsline{toc}{chapter}{Bibliography}
 
-\begin{appendix}
-%\addcontentsline{toc}{chapter}{\appendixnamelower}
-\include{Appendix}
-\end{appendix}
+%\begin{appendix}
+%%\addcontentsline{toc}{chapter}{\appendixnamelower}
+%\include{Appendix}
+%\end{appendix}
 
 \end{document}

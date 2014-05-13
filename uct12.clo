@@ -379,28 +379,28 @@
 %    -- reset the section counter to zero
 %    -- redefine the \chapter command if appendix titles and headings
 %       are to look different from chapter titles and headings.
- 
-\def\appendix{\par
-  \setcounter{chapter}{0}%
-  \setcounter{section}{0}%
-  \def\thechapter{\Alph{chapter}}
-  \def\@chapter[#1]#2{\ifnum \c@secnumdepth >\m@ne
-        \refstepcounter{chapter}%
-        \typeout{\@chapapp\space\thechapter.}%
-        \addcontentsline{toc}{chapter}{Appendix A Results Graphs}\else
-      \addcontentsline{toc}{chapter}{Appendix A Results Graphs}\fi
-   \chaptermark{#1}%
-   \addtocontents{lof}%
-       {\protect\addvspace{10\p@}}% Adds between-chapter space
-   \addtocontents{lot}%
-       {\protect\addvspace{10\p@}}% to lists of figs & tables.
-   \if@twocolumn                  % Tests for two-column mode.  
-           \@topnewpage[\@makechapterhead{#2}]%
-     \else \@makechapterhead{#2}%
-           \@afterheading         % Routine called after chapter and
-     \fi}                         % section heading.
-   \def\@chapapp{\appendixname}%
-}
+% 
+%\def\appendix{\par
+%  \setcounter{chapter}{0}%
+%  \setcounter{section}{0}%
+%  \def\thechapter{\Alph{chapter}}
+%  \def\@chapter[#1]#2{\ifnum \c@secnumdepth >\m@ne
+%        \refstepcounter{chapter}%
+%        \typeout{\@chapapp\space\thechapter.}%
+%        \addcontentsline{toc}{chapter}{Appendix A Results Graphs}\else
+%      \addcontentsline{toc}{chapter}{Appendix A Results Graphs}\fi
+%   \chaptermark{#1}%
+%   \addtocontents{lof}%
+%       {\protect\addvspace{10\p@}}% Adds between-chapter space
+%   \addtocontents{lot}%
+%       {\protect\addvspace{10\p@}}% to lists of figs & tables.
+%   \if@twocolumn                  % Tests for two-column mode.  
+%           \@topnewpage[\@makechapterhead{#2}]%
+%     \else \@makechapterhead{#2}%
+%           \@afterheading         % Routine called after chapter and
+%     \fi}                         % section heading.
+%   \def\@chapapp{\appendixname}%
+%}
  
 
 %    ****************************************
