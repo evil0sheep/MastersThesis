@@ -1032,6 +1032,8 @@ Thesis Committee Chair
 %%               as it says in the comment in latex.tex
 %% RmS 92/01/14: Set \p@enumiv to {} and \theenumiv to \arabic{enumiv}
 %%               to get correct references
+\let\@openbib@code\@empty
+
 \def\thebibliography#1{\chapter*{\bibname\@mkboth{%
 \uppercase{\bibname}}{\uppercase{\bibname}}}
   \addcontentsline{toc}{chapter}{\bibnamelower}
@@ -1042,6 +1044,7 @@ Thesis Committee Chair
             \advance\leftmargin\labelsep
             \setlength\itemindent{-20pt}% change using the inverse of the length used before
             \@openbib@code
+            \newcommand\newblock{\hskip .11em\@plus.33em\@minus.07em}
             \usecounter{enumiv}%
             \let\p@enumiv\@empty
             \renewcommand\theenumiv{\@arabic\c@enumiv}}%

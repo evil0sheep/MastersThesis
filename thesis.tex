@@ -25,8 +25,8 @@
     \usepackage[pdftex,plainpages=false,breaklinks=true,colorlinks=true,urlcolor=blue,citecolor=blue,%
                                        linkcolor=blue,bookmarks=true,bookmarksopen=true,%
                                        bookmarksopenlevel=3,pdfstartview=FitV,
-                                       pdfauthor={Brett Armstrong},
-                                       pdftitle={Can Clustering Improve Requirements Traceability?},
+                                       pdfauthor={Forrest Reiling},
+                                       pdftitle={Extending Windowing Systems to Three Dimensions},
                                        pdfkeywords={thesis, masters, cal poly}
                                        ]{hyperref}
     %Options with pdfstartview are FitV, FitB and FitH
@@ -92,8 +92,8 @@
 
 \geometry{verbose,nohead,tmargin=1.25in,bmargin=1in,lmargin=1.5in,rmargin=1.3in}
 
-\setcounter{tocdepth}{2}
-
+\setcounter{tocdepth}{3}
+\setcounter{secnumdepth}{3}
 
 % Different font in captions (single-spaced, bold) ------------
 %\newcommand{\captionfonts}{\small\bf\ssp}
@@ -185,7 +185,8 @@ Thanks to:
 % ------------- End main chapters ----------------------
 
 \clearpage
-\bibliographystyle{plain}
+\nocite{*}
+%\bibliographystyle{plain}
 \bibliography{Bibliography}
 %\addcontentsline{toc}{chapter}{Bibliography}
 
