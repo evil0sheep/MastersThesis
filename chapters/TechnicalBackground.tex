@@ -6,13 +6,24 @@ The demands of computer graphics applications are fundamentally very different f
 		
 OpenGL organizes access to graphics hardware around a data pipeline commonly referred to as ‘The Graphics Pipeline’, and while a detailed description of this pipeline is certainly beyond the scope of this thesis, some of its stages are very important to the design of the windowing system here, so a brief overview is included. Readers seeking further explanation are directed to [citation] for a good introductory overview of the modern graphics pipeline and [citation] for a very good and very in-depth discussion of its function. The modern graphics pipeline is complex, and many datapaths exist, but for the scope of this explanation we will focus on the primary datapath illustrated in Figure \ref{graphics-pipeline}.
 
-Figure: The basic structure of the graphics pipeline. Note the vertex processor, rasterizer, fragment processor, and termination in a frame buffer. Image taken from [citation]
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=1.0\textwidth]{images/graphics-pipeline.png}
+\caption{The basic structure of the graphics pipeline. Note the vertex processor, rasterizer, fragment processor, and termination in a frame buffer. Image taken from  \protect\cite{litime}}
+\label{graphics-pipeline}
+\end{figure}
+
 
 \subsection{The Vertex Transformation}
-In this datapath, incoming geometry is first transformed in the vertex processor from the space in which it defined into the space in which it is projected onto the 2D output surface. This vertex transformation is represented as the composition of several linear transformation matrices in a homogeneous coordinate space, which, being linear transformations, can be applied to the vertices in a sequence or as a composite transform computed as the outer product of the component matrices. Though in principle any number of transformations can compose this composite vertex transformation, it is typically thought of as being composed of three principal transformations. 
+In this datapath, incoming geometry is first transformed in the vertex processor from the space in which it defined into the space in which it is projected onto the 2D output surface. This vertex transformation, shown in Figure \ref{vertex-transformation} is represented as the composition of several linear transformation matrices in a homogeneous coordinate space, which, being linear transformations, can be applied to the vertices in a sequence or as a composite transform computed as the outer product of the component matrices. Though in principle any number of transformations can compose this composite vertex transformation, it is typically thought of as being composed of three principal transformations. 
 
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=1.0\textwidth]{images/vertex-transformation.png}
+\caption{The basic sequence of transformations applied to geometry in the vertex processor. The final transformation in this sequence is applied after the vertex processor and is not part of the composite transformation matrix. Image taken from  \protect\cite{litime}}
+\label{vertex-transformation}
+\end{figure}
 
-Figure: The basic sequence of transformations applied to geometry in the vertex processor. The final transformation in this sequence is applied after the vertex processor and is not part of the composite transformation matrix. Image taken from [citation]
 
 The geometry of an object is defined in a space relative to that object, which allows multiple copies of an object placed throughout a scene to share geometry on the GPU. The first transformation, called the ‘modeling transform’ or ‘model matrix’, maps geometry from object space into the space in which the scene is defined, called ‘world space’. The second transformation, called the ‘camera transformation’  or ‘view matrix’, maps geometry from world space into the space of the virtual camera, whose origin is the center of projection of the camera and whose axes are aligned with the camera’s view vectors. This is followed by the projection transformation, which (coupled with a hardware accelerated homogenous divide following output from the vertex processor) maps the vertices into ‘normalized device coordinates’, where all vertices lying inside the view frustum defined by the projection matrix now lie inside the ‘canonical view volume’ reaching from -1.0 to 1.0 along all axes of the new space.
 Understanding how these transformations affect the user’s perception of 3D information is important because the synchronization of the matrices that represent them between the client application and the windowing system is the key to correctly compositing 3D clients without needing to do the projection within the windowing system. A simple example is included here to ensure this is clear to all readers.
@@ -44,7 +55,14 @@ These windowing systems are built around an architecture where a program called 
 
 As with the other topics in this section, a thorough discussion of the architectural differences between Wayland and X is both outside the scope of this thesis and largely irrelevant to the windowing system presented here, and interested readers are directed to [citation] and [citation] for more information. However, there is one architectural feature of X which makes it unsuitable for supporting the windowing system described here.
 
-Figure: High level architecture of the X and Wayland windowing systems. Note that the X compositor is a separate entity from the display server, whereas the Wayland compositor provides the functionality of the display server internally. Images taken from   [citation].
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=1.0\textwidth]{images/wayland-x-architecture.png}
+\caption{High level architecture of the X and Wayland windowing systems. Note that the X compositor is a separate entity from the display server, whereas the Wayland compositor provides the functionality of the display server internally. Image taken from  \protect\cite{litime}}
+\label{wayland-vs-x}
+\end{figure}
+
+
 
 As illustrated in Figure \ref{wayland-vs-x}, the high level operation of the two windowing systems is largely the same, and the interface between the kernel and the display server are recycled, allowing Wayland to reuse much of the infrastructure developed to support X. The key difference that is relevant to this thesis, immediately visible in in Figure \ref{wayland-vs-x}, is Wayland’s integration of the display server and the compositor. 
 
