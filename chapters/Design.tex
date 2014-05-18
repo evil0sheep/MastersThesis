@@ -1,9 +1,10 @@
 \chapter{Design: A Unified Windowing System}
+\label{sec:design}
 The core goal of this thesis is to demonstrate, both conceptually and practically, that windowing systems are capable of solving the same problems for 3D user interfaces that they currently solve for 2D user interfaces, that a single windowing system can solve the same problems for 2D and 3D interfaces, and that a system which does so can be built on top of an existing windowing system. To understand this further, let’s examine abstractly the services that a windowing system provides and how these map onto 3D interfaces.
 
 \section{Windowing System Services}
 
-In general, windowing systems provide a software platform for graphical applications that gives these applications a means to use the hardware resources they need to provide graphical interfaces without needing to interact with the hardware directly. Because the windowing system handles the direct interactions with the hardware, it is able to multiplex the use of hardware resources between many individual applications which need the capabilities they provide. Because providing these hardware capabilities to applications abstractly is the core purpose of the windowing system, it is important to understand what it is that they represent.
+In general, windowing systems provide a software platform for graphical applications that gives these applications a means to use the hardware resources they need to provide graphical interfaces without needing to interact with the hardware directly. Because the windowing system handles the direct interactions with the hardware, it is able to multiplex the use of hardware resources between many individual applications which need the capabilities the hardware provides. Because providing these hardware capabilities to applications abstractly is the core purpose of the windowing system, it is important to understand what it is that these hardware capabilities represent.
 
 \subsection{Graphical Interface Hardware and The Graphical Interface Space}
 
@@ -63,7 +64,7 @@ It is also hypothetically possible for the 3D clients to project their 3D geomet
 \subsection{Stereo Images}
 Another important mechanism that informs human perception of 3D space is our ability to resolve depth from the difference in the images produced by our two eyes (see Section~\ref{sec:motion-parallax-and-stereopsis} for more details). This requires that the scene be rendered from two viewpoints (one corresponding to the position of each eye), and that these two images be sent to the correct eye. This requires that the compositor send the clients a different view and projection matrix for each viewpoint, and that the client send a separate image back to the compositor for each of these viewpoints. 
 
-This could be accomplished with separate buffers for each eye, but in the implementation presented here, the client creates a double-wide buffer and simply writes the two images side by side in the buffer, using parameters provided by the compositor. This is discussed in more detail in Section~\ref{sec:dongs}.
+This could be accomplished with separate buffers for each eye, but in the implementation presented here, the client creates a double-wide buffer and simply writes the two images side by side in the buffer, using parameters provided by the compositor. This is discussed in more detail in Section~\ref{sec:undef}.
 
 \subsection{Depth Buffers}
 
@@ -78,4 +79,4 @@ The other approach, and the one taken by the system presented here, is to have t
 
 An important property of traditional windows is that applications can draw \textit{only} within the bounds of their window. This comes naturally with 2D windowing systems, where the application's window consists of the entire drawable area of its window buffer. However, in the system presented here, 3D clients draw into a buffer which is the same dimensions as the buffer which the compositor draws into, allowing an uncontrolled client to draw into any portion of the 3D interface space.
 
-The solve this problem, the compositor presented here is designed to simply ignore pixels in the buffer produced by 3D clients if they lie outside the bounds of its 3D window. The exact procedure which ensures this varies depending on which type of 3D window is being clipped, and is discussed in more detail in Section~\ref{sec:dongs}.
+The solve this problem, the compositor presented here is designed to simply ignore pixels in the buffer produced by 3D clients if they lie outside the bounds of its 3D window. The exact procedure which ensures this varies depending on which type of 3D window is being clipped, and is discussed in more detail in Section~\ref{sec:undef}.
