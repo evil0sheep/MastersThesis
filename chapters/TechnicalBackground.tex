@@ -98,6 +98,7 @@ In the Wayland architecture, by contrast, the compositor and the display server 
 
 
 \subsection{Wayland Display Server Protocol}
+\label{sec:wayland-protocol}
 
 The Wayland display server protocol, detailed in \cite{wayland-protocol}, is an asynchronous, object oriented protocol in which the compositor advertises objects which can accept requests from clients and generate events which the clients to which the clients can respond. These objects are either globally defined or contained within a global object, and can have any type defined in the core protocol specification or extensions to this protocol. When an object is created, all clients are notified via a creation event, and when a client connects it receives such a creation event for every global object which is already globally defined.
 
@@ -106,6 +107,7 @@ The protocol is defined in a set of Extensible Markup Language (XML) files from 
 The system presented in this thesis defines a set of extensions to the Wayland protocol which allow it to provide 3D windowing services to clients which support these extensions, while simultaneously fully supporting clients which are designed to interact with traditional, 2D Wayland compositors.
 
 \subsection{EGL}
+\label{sec:egl}
 
 The Khronos Group EGL Native Platform Interface (EGL) \cite{egl} is an API specified by Khronos Group (who also specify APIs like OpenGL and OpenVG) which `provides mechanisms for creating rendering surfaces onto which client APIs like OpenGL ES and OpenVG can draw, creates graphics contexts for client APIs, and synchronizes drawing by client APIs as well as native platform rendering APIs` \cite{egl}. In the Wayland architecture, EGL allows clients to create a drawing surface on the GPU (essentially region of GPU memory that can be filled with an image with a specific color format), and allows the compositor to access the contents of this surface directly  and use it for hardware accelerated compositing without ever needing to take the contents of the surface off of the GPU. 
 

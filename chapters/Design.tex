@@ -67,6 +67,7 @@ Another important mechanism that informs human perception of 3D space is our abi
 This could be accomplished with separate buffers for each eye, but in the implementation presented here, the client creates a double-wide buffer and simply writes the two images side by side in the buffer, using parameters provided by the compositor. This is discussed in more detail in Section~\ref{sec:undef}.
 
 \subsection{Depth Buffers}
+\label{sec:depth-compositing}
 
 In order for the presentation of the 3D interface to appear consistent to the user, the occlusion order of the geometry in the space must be preserved across geometry drawn by different 3D clients and by the compositor. 
 
