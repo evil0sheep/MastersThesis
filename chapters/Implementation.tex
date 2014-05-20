@@ -46,7 +46,71 @@ In its current state the Motorcar protocol extensions has very basic support for
 
 This section describes the operation of 3D clients using the Motorcar protocol extensions, and most of this is firmly grounded in the way that the sample 3D clients provided by Motorocar operate. The operation of 2D clients is not discussed in detail here because it is literally identical to standard Wayland client operation, which is a key feature of this system because it allows unmodified 2D clients to window into the 3D interface space without even being aware of its three dimensional nature. The example Motorcar client code is derived from the weston-simple-egl client distributed with Weston (the Wayland reference compositor), but adapted from C to C++ and repackaged as an interface which can be implemented by individual clients with minimal effort.
 
-When the client connects to the compositor it receives 
+When the client connects to the compositor it receives creation events for all of the global objects instantiated by the compositor, including the Motorcar shell and all of the Motorcar viewpoints. The client can use the Motorcar shell to create a Motorcar surface from any Wayland surfaces it create, which tells the compositor to handle that surface as a Motorcar surface (since these are composited differently than normal surfaces) and allows the compositor to send 3D input events to that client, which the client can listen for if it chooses. 
+
+The client binds each viewpoint and creates a data structure to represent it internally, which it then attaches to the event listener for that viewpoint. The compositor responds to the binding process by sending the client the current state of the viewpoint (its view and projection matrices and its view port) to the client, which the client then stores in the data structure associated with that viewpoint.
+
+Every time the client gets the frame callback indicating that it should draw a new frame, it iterates over all of the viewpoints and draws it's scene however it likes with the view and projection matrices from that view point into the viewpoint's color view port, then copies the depth buffer for that viewpoint into the viewpoint's depth view port. Once this has been done for each of the viewpoints the client calls eglSwapBuffers, which swaps the surfaces front and back buffers and informs the compositor that surface is ready to be updated.
+
+\section{Compositor Operation}
+
+This section describes the operation of the Motorcar compositor implemented for this thesis. There are other ways that a Motorcar protocol compliant compositor could function, but enumerating all of these designs is an intractably large task and likely would not be useful anyway, so instead this section focuses on the concrete aspects of the design that was implemented and is known to work. The operation of the compositor is complex, and an exhaustive discussion of this software that implements it would be obscenely long, so the discussion here is limited to the components of the compositor which are relevant to the mechanism by which is provides 3D windowing services to clients. Users seeking a more comprehensive understanding of the structure of this software are directed to the documentation in the GitHub repository \cite{motorcar-github}.
+
+\subsection{The Motorcar Compositor Framework}
+
+This thesis presents a modular C++ framework for Motorcar compositors designed to be extremely flexible in the way that 3D windowing services are provided to clients. The main function of a compositor built with this framework essentially just initializes components which implement interfaces defined in the framework and attaches them to one another over these interfaces. This allows components which do not meet the needs of a particular compositor to be replaced by ones that do without needing to rebuild the compositor from scratch, and it allows new components to be defined and attached in natural ways. Examples of modules which would likely be replaced are device specific classes (which implement device interfaces for things like 3D pointing devices or head mounted displays on top of device specific API's) and the window manager (which controls how input events are directed to clients and how surfaces are laid out in 3D when they are mapped).
+
+\subsubsection{The QtWayland Motorcar Compositor}
+
+The Motorcar compositor implemented for this thesis uses several core components built on top of the QtWayland Compositor API. QtWayland is a module in the Qt toolkit which provides a Wayland backend for graphical Qt applications, as well as providing a simple framework for building Wayland compositors on top of Qt. All of the QtWayland dependent functionality in this compositor is isolated within a small set of classes which hide the QtWayland functionality behind interfaces defined in the Motorcar framework, which could hypothetically allow it to be separated and allow Motorcar compositors to be built without a Qt dependency, though this is not necessarily desirable.  
+
+QtWayland abstracts almost all of the interaction with the Wayland protocol itself (with the exception of interactions with the Motorcar protocol extensions) behind a set of C++ classes which form the QtWayland Compositor interface, and most of these classes interact with the Motorcar compositor framework through thin wrapper classes which exist primarily to isolate the Qt dependency. It handles almost all of the behaviour needed to correctly interact with 2D clients, allowing the Motorcar compositor framework to focus on embedding the 2D clients' surfaces in the 3D space and correctly sending these surfaces input events in their local coordinate system. Additionally, Qt provides a platform independent OpenGL context, which allows QtWayland compositors to run within other Wayland Compositors, within an X environment, or even directly on top of the user interface hardware abstractions in the Linux kernel.
+
+\subsubsection{The Compositor Scene Graph}
+
+
+
+The compositor maintains an internal scene graph which contains all spatial elements in the 3D interface space. This includes surfaces (for both 2D and 3D windows), viewpoints, displays, input devices, models of the user skeleton, and any graphical interface elements drawn by the compositor (for example window decorations or docks). All scene graph classes inherit from a root class called SceneGraphNode, which provides spatial relationship primitives as well as defining a doubly linked tree structure between nodes (which forms the actual graph of the scene) and provides mechanisms for traversing this tree. 
+
+All scene graph nodes have a single parent and a list of children, and these are made accessible so that other parts of the compositor can manipulate the scene graph as they see fit, and these two members form the core of the functionality that the SceneGraphNode class provides. The scene graph is rooted in an instance of a special scene graph class called Scene (which is unique in being allowed to have a null parent), and this forms the primary interface between scene graph classes (which can always access the scene root by traversing up the scene graph) and classes like the window manager, motorcar shell, and display server modules (which typically are constructed with a pointer to the scene on which they operate).
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=1.0\textwidth]{images/scene-graph-classes.png}
+\caption{The inheritance graph for the classes composing the scene graph. Note the division between virtual nodes (which can be children of any other node) and physical nodes (which can only be children of other physical nodes) to reflect the impossibility of a physical object being attached to a virtual one.}
+\label{fig:scenegraph-classes}
+\end{figure}
+
+\paragraph{Traversing the Scene Graph}
+
+The scene graph is designed to be traversed several times per frame, and the SceneGraphNode class provides virtual methods which allow implementing classes respond to each of these traversals appropriately without needing to implement the traversal logic themselves. The first traversal, invoked immediately prior to sending the current viewpoints to the clients and requesting new data from them, is intended to allow implementing classes to do per-frame work prior to rendering (for example animation updates or event generation by devices) and is handled by overriding SceneGraphNode::handleFrameBegin(). The second traversal, invoked once per display per frame, is intended to allow implementing classes to render their content to the display and is what drives surface classes to perform the compositing operations discusses in Section~\ref{sec:3d-compositing}. This traversal can be handled directly by overriding SceneGraphNode::handleFrameDraw(), but most classes that respond to this traversal should inherit Drawable and override Drawable::draw() instead. The third and final traversal, invoked every frame after drawing is completed and handled by overriding SceneGraphNode::handleFrameEnd(), in intended to allow any implementing classes to clean up any resources which were created during the first traversal that will not be needed in the next frame.
+
+\subsection{Frame Timing and Latency}
+
+This design requires that the compositor send new view matrices to its 3D clients every frame, wait for them to draw new images, and then composite these images and send them to the display before the next frame starts, so getting the timing correct is a little bit tricky and there are several possible approaches with merit. 
+
+The approach taken in this implementation is to draw the scene graph (the handleFrameDraw traversal) with the current data at the beginning of the frame, clean up the frame (the handleFrameEnd traversal), update the scene graph state (the handleFrameBegin traversal), then send the new matrices to the clients followed by the frame callbacks that tell them to draw a new frame, then wait until the next vSync event (indicating the display is done drawing) to swap the compositor buffers and restart the process. This approach favours using old client output over dropping frames in the compositor because it gives clients only the time remaining in the frame after compositing completes to update their content before the compositor simply uses the output it already has in memory. This ensures that no single client can reduce the compositor frame rate, but it also means that 3D clients can get out of sync with the compositor, which would break the illusion of a unified 3D interface space (because out-of-sync clients would be drawn from a viewpoint that has since changed). Additionally, this means that the time it takes a movement of the user's head to affect the image drawn appropriately (referred to as `motion-to-photon latency') would include an entire extra frame's worth of time, which is undesirable in certain applications.
+
+An alternative approach would be to update the scene graph, send the new matrices and frame callbacks to the 3D clients, wait until all of the 3D clients have finished drawing, and only then draw the scene and clean up. This approach would minimize the motion-to-photon latency but, because it requires that the compositor wait for the clients to finish drawing, it could allow a single slow client to cause the compositor to drop frames. This approach may be more suitable for applications like immersive virtual reality video games, where only a single latency-sensitive application needs compositing, and it is probably not the most general purpose solution. As discussed in Section~\ref{sec:undef}, this timing mode could potentially be toggled from the client based on its application profile, though such functionality is not yet implemented in the system presented here.
+
+\subsection{Three Dimensional Compositing}
+\label{sec:3d-compositing}
+
+The core functionality of a Motorcar compositor is its ability to combine interfaces from 2D and 3D applications in a unified 3D interface space. The compositing portion of this requires that the compositor be able to draw 2D windows on planes embedded in the 3D space and be able to composite the output from 3D applications with these planes as well as with the output of other 3D applications. The first requirement is fairly straightforward (especially with the use of QtWayland), essentially boiling down to projecting and texturing quads with OpenGL, so we do not bother to discuss it in detail here. The second requirement is met with a fairly complex mechanism that forms one of the core contributions of this thesis, and this mechanism is the focus of the rest of this section.
+
+When clients create a Motorcar surface, the scene graph node representing the surface (of class WaylandSurfaceNode) is replaced by a new node with an inheriting type (class DepthCompositedSurfaceNode)  that defines the correct compositing behaviour for Motorcar surfaces. The DepthCompositedSurfaceNode class performs the compositing operations needed to make the contents of its surface appear three dimensional to the user.
+
+\subsubsection{Depth Buffer Extraction}
+
+The first step of the compositing process is to extract the depth image from the color image, due to the problem described in Section~\ref{sec:depth-viewport}.
+
+\subsubsection{Clipping}
+
+
+
+
+
+
 
 
 
