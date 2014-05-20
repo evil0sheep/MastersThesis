@@ -21,6 +21,7 @@ The first interface, `motorcar{\_}shell' represents a compositor shell that supp
 The interface `motorcar{\_}surface' represents a 3D window of the kind discussed in this thesis. It allows the client to request the type of 3D window desired (for example a cuboid or portal window) and declares events which allow the compositor to inform the client of the 3D window's bounds and transform in space and to deliver 3D input events to the client. Because the instantiation of this interface takes a Wayland surface as an argument, it allows the compositor to identify which surfaces are being used as Motorcar surfaces and composite them appropriately. When a Motorcar surface is created the compositor calculates the buffer size needed to hold the images (and depth buffers) for all of the viewpoints and resizes the surface to these dimensions.
 
 \subsubsection{Motorcar Viewpoint}
+\label{sec:viewpoint}
 
 Perhaps the most important of the interfaces defined in the Motorcar extensions, `motorcar{\_}viewpoint' represents a virtual camera in the 3D interface space managed by the compositor (usually corresponding to one of the user's eyes), and provides the mechanisms needed to ensure that the client's 3D content is projected in a manner which allows it to be properly composited with 3D content from other clients and the compositor. This interface has no requests, only events which allow the compositor to inform clients of the parameters for the viewpoint which it represents.
 
@@ -105,6 +106,7 @@ When clients create a Motorcar surface, the scene graph node representing the su
 The first step of the compositing process is to extract the depth image from the color image, due to the problem described in Section~\ref{sec:depth-viewport}.
 
 \subsubsection{Clipping}
+\label{sec:clipping-impl}
 
 
 
