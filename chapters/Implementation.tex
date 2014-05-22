@@ -38,6 +38,12 @@ The use of a second view port in the color buffer to transfer the contents of th
 	
 This is overcome by doubling the size of the color buffer attached to the client's default framebuffer, drawing into a framebuffer object whose color and depth buffers are backed by textures, and then texturing both the color buffer and the depth buffer from the framebuffer object into the color buffer attached to the default framebuffer. The compositor can then extract the original depth and color buffers from the client color buffer and write them back into the depth and color buffers of a new framebuffer, which it can then composite with the 3D scene based on the contents of the depth buffer. This introduces a significant amount of rendering overhead and is the only part of this design that cannot currently be implemented cleanly on top of Wayland. Solving this problem efficiently, by giving the compositor direct access to the depth buffer attached to the client's default framebuffer, is probably possible but would likely require modification of the implementation of Wayland EGL within Mesa. This is considered by the author to be the single most pressing area of future work on this system.
 
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=1.0\textwidth]{images/depth-buffer-operation.png}
+\caption{A high level conceptual illustration of the depth compositing process. Clients draw their depth and color images into the same, double-height color buffer, which the compositor then draws back into normal sized depth and color buffers, and then composites with other 3D clients using the traditional depth test. Lighter color in the depth images indicates that those pixels are further away.}
+\end{figure}
+
 The process of encoding the depth buffer contents in the color buffer is further complicated by the differences between the format of the depth buffer and color buffer. The example compositor uses a color format that allocates eight bits for for each of four color channels (red, green, blue, and alpha, which is used here for transparency) and a 16 bit integer depth format. In order to transfer the depth information without loss of precision the system presented here samples the depth buffer on the client side as a 32 bit float, then uses a technique taken from \cite{pack-float-rgba} to pack this float into a four-vector which is then written into the color buffer and unpacked back into the 32 bit float on the compositor side (using the reverse technique from \cite{pack-float-rgba}) and written back into the depth buffer. 
 
 \subsection{Current Protocol Limitations}
@@ -115,7 +121,14 @@ This process ensures both that any fragments in the client buffer which lie outs
 
 This compositor was developed using an Oculus Rift DK1 virtual reality headset and a Sixense Razer Hydra six degree of freedom magnetic tracking handset system. The Rift provides only head orientation tracking, which does not allow proper motion parallax to be simulated (see Section~\ref{sec:motion-parallax-and-stereopsis} for details. Fortunately, the Hydra system comes with two handsets, which allows one to be used to track the head's position (by attaching it to the back of the Rift headset), while the other is used as an input device. This setup can be seen in Figure~\ref{fig:hardware-setup}.
 
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=1.0\textwidth]{images/hardware-setup.jpg}
+\caption{A test subject wearing the hardware system on which this implementation was developed. Notice that one Hydra handset is held in her right hand and being used for 3D input, while the other is attached to the Rift headset and used for traking the position of the head.}
+\label{fig:hardware-setup}
+\end{figure}
 
+The Oculus Rift requires a image space barrel distortion of the rendered stereo image to correct for a pincushion distortion introduced by the optics in the headset. This is performed as a final step immediately before the compositor sends the final image to the display. Clients need not even be aware of this step, which is yet another advantage of using the windowing approach described here.
 
 
 

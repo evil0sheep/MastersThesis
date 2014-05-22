@@ -1,6 +1,6 @@
 \chapter{Design: A Unified Windowing System}
 \label{sec:design}
-The core goal of this thesis is to demonstrate, both conceptually and practically, that windowing systems are capable of solving the same problems for 3D user interfaces that they currently solve for 2D user interfaces, that a single windowing system can solve the same problems for 2D and 3D interfaces, and that a system which does so can be built on top of an existing windowing system. To understand this further, let’s examine abstractly the services that a windowing system provides and how these map onto 3D interfaces.
+The core goal of this thesis is to demonstrate, both conceptually and practically, that windowing systems are capable of solving the same problems for 3D user interfaces that they currently solve for 2D user interfaces, that a single windowing system can solve the same problems for 2D and 3D interfaces, and that a system which does so can be built on top of an existing windowing system. To understand this further, let's examine abstractly the services that a windowing system provides and how these map onto 3D interfaces.
 
 \section{Windowing System Services}
 
@@ -20,6 +20,12 @@ In a traditional windowing system, each application is given its own 2D interfac
 \subsubsection{Three Dimensional Interface Contexts}
 
 Like the interface space it exists in, the concept of a window as a rectangular region of a rectangular 2D interface also has natural extensions to three dimensions. Each application can  be given a 3D region of the 3D interface space which it can fill with whatever 3D content it likes, and the system can deliver 3D input events at any location and orientation within this region. The implementation of this behaviour, especially on top of windowing infrastructure designed for 2D interfaces, has many subtleties and is the focus of the rest of this thesis.
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=1.0\textwidth]{images/window-types.png}
+\caption{An illustration of different types of interface contexts in 3D space. From left to right: a standard 2D window with 2D content, a cuboid window with its 3D content (the red cube) embedded directly in the interface space, and a portal window, demonstrating how its 3D content is only visible through the window surface, much like a physical window.}
+\end{figure}
 
 However, unlike the extension of the interface space to 3D, which has a relatively straightforward interpretation, the interpretation of what a 3D interface context means is somewhat divergent, and requires a more in-depth analysis of what we understand a window to be. There are at least three ways to interpret the concept of a window, and each has a different extension to 3D space.
 
