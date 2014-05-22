@@ -1,0 +1,46 @@
+\chapter{Future Work}
+The thesis presents an architecture for unified 2D and 3D windowing systems, and the implementation, Motorcar, is meant to server both as a proof of concept that this architecture is feasible to implement on top of existing windowing systems and as the basis for an open source implementation of this architecture. As such, the potential for future work based off of this thesis represents a significant portion of the value that it adds to the field. 
+
+\section{Input Events}
+The system presented here supports a single type of 3D input event which is strongly analogous to traditional mouse events, only three dimensional. These events map well onto the hardware on which this system was developed (since the Razer Hydra is strongly analogous to the three dimensional equivalent of a traditional mouse), but this class of input events by no means captures all classes of 3D input. Other broad classes of 3D input, some of which are discussed here, could also be handled by the windowing system and delivered to applications abstractly.
+
+\subsection{Skeleton Tracking}
+Many consumer grade 3D input devices are designed to track the user's body directly and use this information for input. The APIs which provide the tracking information are typically device specific, though systems which abstract this information from device specific APIs are actively under development. A good example of one such system is Shapansky's Jester \cite{jester}, which not only provides a device agnostic abstraction, but also provides a framework for using multiple skeleton tracking devices to drive a unified skeleton model. 
+
+Integration of such a system into Motorcar would allow it to provide client applications with abstract skeleton input and provide devices an abstract input interface which could be driven off a variety of device specific APIs. This would require that an additional set of protocol extensions be developed to communicate skeleton data to 3D clients, but the author sees no reason why this would not be possible. 
+
+Furthermore, Wayland supports touch input natively, so the skeleton data could be used to generate touch events for 2D windows (whenever the user's fingers intersect the window in 3D space), allowing users to interact directly with 2D applications embedded in the space around them witshout these applications needing to support the extensions which communicate skeleton data directly.
+
+\subsection{Gestures}
+
+Having the windowing system handle skeleton input internally would also allow it to recognize gestures (specific sequences of body movement) and use them to control the windowing system or to deliver them to client applications as input events directly. This would require several new systems to function in the most general sense. 
+
+The first, and perhaps most important, requirement is some way of representing gestures in an abstract and general way so that they can be communicated between systems involved in the gesture input data flow. Such a representation would need to able to represent a broad class of useful gestures (both as a general gesture that could happen and as a specific gesture event that has happened) in a variety of formal language (so gestures could be communicated between systems written in different languages) including the Wayland display server protocol. A set of protocol extensions would need to be created to communicate gestures represented in this form between the compositor and client applications.
+
+The second is a gesture recognizer which can operate on the unified skeleton model to recognize any gesture described in this representation. Because the recognizer can recognize any gesture described in the abstract representation, it could recognize gestures on behalf of many different entities, provided these entities had some channel of requesting that the recognizer listen for their gestures. This means that the windowing system could register gestures for recognition which it could use to control windows, applications could register domain specific gestures for recognition through the windowing systems, and users could configure special gestures which they like to be used for a variety of input purposes.
+
+The third is some kind of training mechanism which would allow users or developers to input a set of movements and then use these movements to generate a description of a gesture in the abstract representation without needing to define the representation explicitly. This could be accomplished by multiple disjoint systems, or it could be integrated into the recognizer, or both.
+
+\section{User Interface Toolkits}
+
+In traditional windowing systems, applications rarely interact directly with the windowing system itself. Rather, interactions with the windowing system is handled by a piece of middleware called a user interface (UI) toolkit. These toolkits abstract higher level interface concepts, like buttons and menues, on top of the windowing system, and applications are built with this higher level components. These toolkits are complex, and the design of such a system is a significant software engineering challenge. 
+
+The development of such a toolkit on top of a 3D windowing system like the one presented here  would allow applications to leverage the capabilities they provide without needing to create their own interface abstractions on top of the windowing systems. There is at least one relatively mature toolkit for building applications with 3D user interfaces, called Vrui \cite{vrui}, but it is designed to run on top of X11. Porting Vrui to run on top of a 3D windowing system may be possible, and would make a large body of 3D user interface research compatible with these systems, but it is unclear whether this is even possible at this time.
+
+\section{EGL Depth Buffer Extensions} 
+Motorcar takes a significant performance hit because it needs to copy the client depth buffer in and out of the color buffer in order to make it accessible to the compositor, which adds two rendering passes to the compositing process for 3D client applications. EGL support extensions of the interfaces, and it may be possible to modify the open source EGL implementation in Mesa to natively support making the client depth buffer directly accessible to the compositor internally, eliminating the need for the extra rendering passes. It is not certain that this is possible, but it is likely. This is likely the next thing the author will pursue on this project.
+
+\section{Immersive Vitrual Reality Mode}
+\label{sec:vr-mode}
+Many of the applications which currently use the hardware that the windowing system presented here is designed to abstract are immersive virtual reality (VR) experiences. These applications are very resource intensive, extremely latency sensitive, and typically are designed to take complete control of the hardware.
+
+The depth compositing process presented here introduces significant rendering overhead, and is only necessary if multiple applications wish to use the 3D user interface hardware simultaneously (which is not the case with VR applications). Therefore it could be useful to allow client applications to enable a special compositing mode which ignores outputs from all other applications (and stops asking them to update), ignores the client depth buffer, and blit the client color buffer directly into the compositor buffer. This would essentially disable the compositing process, minimizing the computational overhead introduced by the compositor (and other clients), and minimizing the latency added by the compositing process.
+
+It may also be useful to allow clients in this mode to request that the compositor update the view and projection matrices at any point in time, allowing VR applications to use the most recent head transform possible. 
+
+
+\section{Feasibility in Other Windowing Systems}
+It is clear that the basic architecture outlined in Section~\ref{sec:design} can be implemented on top of Wayland, since Motorcar demonstrates this by nature of its existence, and it is argued in Section~\ref{sec:wayland-and-x} that it is not feasible to implement this design on top of X11. However, it remains unclear whether or not it would be feasible to implement this architecture on top of the windowing systems used by proprietary operating systems like Microsoft Windows and Apple's OSX. If it was possible to support the same basic style of 3D windowing mechanism in these windowing systems, then it could be possible for UI toolkits like the ones discussed above to provide a cross platform abstraction for applications with 3D user interfaces, allowing for the development of a rich software ecosystem for computers that support 3D user interfaces. 
+
+It is not immediately clear whether or not the necessary modifications to these windowing systems could be made by developers outside of the corporations that maintain them, so this point may be moot, but it would certainly be worth further investigation.
+
