@@ -14,7 +14,7 @@ A fair amount of work has been done on managing traditional 2D windows in a 3D s
 \caption{The Task Gallery \protect\cite{task_gallery}}
 \end{figure}
 
-The Task Gallery \cite{task_gallery} is a 3D window manager for Microsoft Windows which embeds groups of related windows called 'tasks' into a 3D space to make them appear like artwork hung in a gallery, with the active task on a center 'stage'. This system has some truly 3D user interface elements, like the gallery and the stage, but it exclusively supports 2D windows. 
+The Task Gallery \cite{task_gallery} is a 3D window manager for Microsoft Windows which embeds groups of related windows called \emph{tasks} into a 3D space to make them appear like artwork hung in a gallery, with the active task on a center \emph{stage}. This system has some truly 3D user interface elements, like the gallery and the stage, but it exclusively supports 2D windows. 
 
 %\begin{figure}[ht!]
 %\centering
@@ -34,7 +34,7 @@ Feiner et al. demonstrate a similar 3D window management system in an augmented 
  
 \subsection{In Production Software}
 
-As GPU accelerated window compositing has become widely available on consumer hardware (following improved OpenGl support in X.org around 2006) the ability to handle windows in 3D has become broadly available in consumer software.  Some widely used compositing window managers, like Compiz \cite{compiz}, draw window output as textures on 2D surfaces in 3D, allowing them to create compelling 3D visual effects and animate window transitions in 3D space. However, because the architecture of X11 does not give the compositor control of the input system, X11 compositing window managers like Compiz are unable to properly redirect input to the windows while their output is transformed to appear 3D, which seriously limits the ability X compositors to create useful 3D interfaces.
+As GPU accelerated window compositing has become widely available on consumer hardware (following improved OpenGL support in X.org around 2006) the ability to handle windows in 3D has become broadly available in consumer software.  Some widely used compositing window managers, like Compiz \cite{compiz}, draw window output as textures on 2D surfaces in 3D, allowing them to create compelling 3D visual effects and animate window transitions in 3D space. However, because the architecture of X11 does not give the compositor control of the input system, X11 compositing window managers like Compiz are unable to properly redirect input to the windows while their output is transformed to appear 3D, which seriously limits the ability X compositors to create useful 3D interfaces.
 
 \begin{figure}[ht!]
 \centering
