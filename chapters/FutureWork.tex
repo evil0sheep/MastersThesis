@@ -9,7 +9,7 @@ Many consumer grade 3D input devices are designed to track the user's body direc
 
 Integration of such a system into Motorcar would allow it to provide client applications with abstract skeleton input and provide devices an abstract input interface which could be driven off a variety of device specific APIs. This would require that an additional set of protocol extensions be developed to communicate skeleton data to 3D clients, but the author sees no reason why this would not be possible. 
 
-Furthermore, Wayland supports touch input natively, so the skeleton data could be used to generate touch events for 2D windows (whenever the user's fingers intersect the window in 3D space), allowing users to interact directly with 2D applications embedded in the space around them witshout these applications needing to support the extensions which communicate skeleton data directly.
+Furthermore, Wayland supports touch input natively, so the skeleton data could be used to generate touch events for 2D windows (whenever the user's fingers intersect the window in 3D space), allowing users to interact directly with 2D applications embedded in the space around them without these applications needing to support the extensions which communicate skeleton data directly.
 
 \subsection{Gestures}
 
@@ -23,7 +23,7 @@ The third is some kind of training mechanism which would allow users or develope
 
 \section{User Interface Toolkits}
 
-In traditional windowing systems, applications rarely interact directly with the windowing system itself. Rather, interactions with the windowing system is handled by a piece of middleware called a user interface (UI) toolkit. These toolkits abstract higher level interface concepts, like buttons and menues, on top of the windowing system, and applications are built with this higher level components. These toolkits are complex, and the design of such a system is a significant software engineering challenge. 
+In traditional windowing systems, applications rarely interact directly with the windowing system itself. Rather, interactions with the windowing system is handled by a piece of middle-ware called a user interface (UI) toolkit. These toolkits abstract higher level interface concepts, like buttons and menus, on top of the windowing system, and applications are built with this higher level components. These toolkits are complex, and the design of such a system is a significant software engineering challenge. 
 
 The development of such a toolkit on top of a 3D windowing system like the one presented here  would allow applications to leverage the capabilities they provide without needing to create their own interface abstractions on top of the windowing systems. There is at least one relatively mature toolkit for building applications with 3D user interfaces, called Vrui \cite{vrui}, but it is designed to run on top of X11. Porting Vrui to run on top of a 3D windowing system may be possible, and would make a large body of 3D user interface research compatible with these systems, but it is unclear whether this is even possible at this time.
 
