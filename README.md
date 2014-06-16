@@ -1,4 +1,4 @@
-JesterThesis
+Motorcat Thesis
 ============
 
-The LaTeX files for my master's thesis on Jester
+The LaTeX files for my master's thesis on Motorcar 
