@@ -344,7 +344,7 @@
 		\addvspace{1.4in} 
 
     A Thesis \par
-    Presented to \par
+    presented to \par
     the Faculty of California Polytechnic State University \par
     \@campus
     
